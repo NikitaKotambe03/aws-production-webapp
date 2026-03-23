@@ -84,3 +84,46 @@ resource "aws_route_table_association" "private_assoc" {
   subnet_id      = aws_subnet.private_subnet.id
   route_table_id = aws_route_table.private_rt.id
 }
+
+resource "aws_security_group" "demo_vpc_sg" {
+    name = "demo-vpc-sg"
+    description = "Adding SSH and TCP rules"
+    vpc_id = aws_vpc.demo_vpc.id
+
+    ingress {
+        from_port = 22
+        to_port = 22
+        protocol = "ssh"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    ingress {
+        from_port = 80
+        to_port = 80
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    egress = {
+        from_port = 0
+        to_port = 0
+        protocol = -1
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    tags = {
+        Name = "ec2-sg"
+        }
+}
+
+resource "aws_instance" "app_server" {
+  ami           = "ami-0f5ee92e2d63afc18" # Amazon Linux (Mumbai)
+  instance_type = "t2.micro"
+  subnet_id     = aws_subnet.private_subnet.id
+
+  vpc_security_group_ids = [aws_security_group.demo_vpc_sg.id]
+
+  tags = {
+    Name = "private-ec2"
+  }
+}
