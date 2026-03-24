@@ -1,25 +1,85 @@
-# AWS Production Ready Scalable Web Application
+# 🚀 AWS Production-Ready Scalable Web Application
 
-This project demonstrates a production-ready cloud architecture built on AWS using DevOps practices.
+## 📌 Project Overview
 
-## Architecture
+This project demonstrates a production-ready cloud architecture built on AWS using DevOps best practices. It showcases infrastructure automation, scalability, high availability, and CI/CD implementation.
 
-Route53 → CloudFront → WAF → ALB → Auto Scaling EC2 → RDS
+---
 
-## Technologies Used
+## 🏗️ Architecture
 
-AWS
-Terraform
-Docker
-Jenkins
-CloudWatch
-SNS
-GitHub
+![Architecture Diagram](architecture/architecture.png)
 
-## Features
+---
 
-Highly available architecture
-Infrastructure as Code using Terraform
-Dockerized application
-CI/CD pipeline with Jenkins
-Monitoring with CloudWatch
+## ⚙️ Tech Stack
+
+* **Cloud Provider:** AWS
+* **Infrastructure as Code:** Terraform
+* **Compute:** EC2 (Auto Scaling Group)
+* **Load Balancer:** Application Load Balancer (ALB)
+* **Networking:** VPC, Subnets, NAT Gateway, Internet Gateway
+* **Containerization:** Docker
+* **CI/CD:** Jenkins
+* **Version Control:** GitHub
+
+---
+
+## 🔥 Key Features
+
+* Highly available architecture using Auto Scaling
+* Load balancing with AWS ALB
+* Secure infrastructure with public & private subnets
+* NAT Gateway for private subnet internet access
+* Infrastructure provisioning using Terraform
+* Dockerized application deployment
+* CI/CD pipeline using Jenkins
+
+---
+
+## 🚀 How It Works
+
+1. User sends request to Application Load Balancer
+2. ALB distributes traffic to EC2 instances
+3. EC2 instances run Docker containers with the app
+4. Auto Scaling ensures availability and scaling
+5. Jenkins automates deployment from GitHub
+
+---
+
+## 📂 Project Structure
+
+```
+aws-production-webapp/
+│
+├── terraform/        # Infrastructure code
+├── app/              # Flask application
+├── docker/           # Docker configuration
+├── jenkins/          # CI/CD pipeline
+├── architecture/     # Architecture diagram
+└── README.md
+```
+
+---
+
+## 🧠 Learnings
+
+* Designed scalable AWS architecture
+* Implemented Infrastructure as Code using Terraform
+* Built CI/CD pipeline with Jenkins
+* Deployed containerized applications using Docker
+
+---
+
+## 📌 Future Improvements
+
+* Add HTTPS using ACM
+* Use multiple AZs for high availability
+* Integrate monitoring (CloudWatch + alerts)
+* Deploy using Kubernetes (EKS)
+
+---
+
+## 🙌 Author
+
+**Nikita Kotambe**
