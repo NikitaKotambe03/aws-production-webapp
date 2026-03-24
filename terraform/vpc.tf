@@ -196,3 +196,43 @@ resource "aws_lb_listener" "http_listener" {
     target_group_arn = aws_lb_target_group.app_tg.arn
   }
 }
+
+#Launch Template
+resource "aws_launch_template" "app_lt" {
+  name_prefix   = "app-template"
+  image_id      = "ami-0f5ee92e2d63afc18"
+  instance_type = "t2.micro"
+
+  vpc_security_group_ids = [aws_security_group.demo_vpc_sg.id]
+
+  tag_specifications {
+    resource_type = "instance"
+
+    tags = {
+      Name = "autoscaling-ec2"
+    }
+  }
+}
+
+resource "aws_autoscaling_group" "app_asg" {
+  desired_capacity = 2
+  max_size         = 3
+  min_size         = 1
+
+  vpc_zone_identifier = [
+    aws_subnet.private_subnet.id
+  ]
+
+  target_group_arns = [aws_lb_target_group.app_tg.arn]
+
+  launch_template {
+    id      = aws_launch_template.app_lt.id
+    version = "$Latest"
+  }
+
+  tag {
+    key                 = "Name"
+    value               = "autoscaling-instance"
+    propagate_at_launch = true
+  }
+}
