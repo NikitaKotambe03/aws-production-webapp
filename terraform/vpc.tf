@@ -220,11 +220,15 @@ resource "aws_launch_template" "app_lt" {
 user_data = base64encode(<<-EOF
 #!/bin/bash
 yum update -y
-yum install -y docker
+yum install -y docker git
 systemctl start docker
 systemctl enable docker
 
-docker run -d -p 80:80 nginx
+git clone https://github.com/NikitaKotambe03/aws-production-webapp.git
+cd aws-production-webapp/docker
+
+docker build -t myapp .
+docker run -d -p 80:80 myapp
 EOF
 )
 }
