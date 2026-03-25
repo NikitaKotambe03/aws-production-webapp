@@ -225,9 +225,9 @@ resource "aws_launch_template" "app_lt" {
               systemctl enable docker
 
               git clone https://github.com/NikitaKotambe03/aws-production-webapp.git
-              cd aws-production-webapp/app
+              cd aws-production-webapp
 
-              docker build -t myapp .
+              docker build -t myapp ./docker
               docker run -d -p 80:80 myapp
               EOF
 )
