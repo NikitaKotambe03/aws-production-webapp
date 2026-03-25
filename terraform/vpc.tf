@@ -1,5 +1,5 @@
 resource "aws_vpc" "demo_vpc" {
-    cidr_block = "10.0.0.0/25"
+    cidr_block = "10.0.0.0/16"
     enable_dns_hostnames = true
 
     tags = {
@@ -9,7 +9,7 @@ resource "aws_vpc" "demo_vpc" {
 
 resource "aws_subnet" "public_subnet" {
     vpc_id = aws_vpc.demo_vpc.id
-    cidr_block = "10.0.1.0/27"
+    cidr_block = "10.0.1.0/24"
     availability_zone = "ap-south-1a"
     map_public_ip_on_launch = true
 
@@ -18,9 +18,20 @@ resource "aws_subnet" "public_subnet" {
     }  
 }
 
+resource "aws_subnet" "public_subnet_2" {
+  vpc_id                  = aws_vpc.demo_vpc.id
+  cidr_block              = "10.0.3.0/24"
+  availability_zone       = "ap-south-1b"
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = "public-subnet-2"
+  }
+}
+
 resource "aws_subnet" "private_subnet" {
     vpc_id = aws_vpc.demo_vpc.id
-    cidr_block = "10.0.2.0/27"
+    cidr_block = "10.0.2.0/24"
     availability_zone = "ap-south-1b"
 
     tags = {
@@ -39,7 +50,7 @@ resource "aws_internet_gateway" "demo-igw" {
 resource "aws_route_table" "public_rt" {
     vpc_id = aws_vpc.demo_vpc.id
 
-    route = {
+    route  {
         cidr_block = "0.0.0.0/0"
         gateway_id = aws_internet_gateway.demo-igw.id
     }
@@ -68,7 +79,7 @@ resource "aws_nat_gateway" "nat" {
 }
 
 resource "aws_route_table" "private_rt" {
-  vpc_id = aws_vpc.main_vpc.id
+  vpc_id = aws_vpc.demo_vpc.id
 
   route {
     cidr_block     = "0.0.0.0/0"
@@ -93,7 +104,7 @@ resource "aws_security_group" "demo_vpc_sg" {
     ingress {
         from_port = 22
         to_port = 22
-        protocol = "ssh"
+        protocol = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
     }
 
@@ -104,7 +115,7 @@ resource "aws_security_group" "demo_vpc_sg" {
         cidr_blocks = ["0.0.0.0/0"]
     }
 
-    egress = {
+    egress  {
         from_port = 0
         to_port = 0
         protocol = -1
@@ -117,7 +128,7 @@ resource "aws_security_group" "demo_vpc_sg" {
 }
 
 resource "aws_instance" "app_server" {
-  ami           = "ami-0f5ee92e2d63afc18" # Amazon Linux (Mumbai)
+  ami           = "ami-0f559c3642608c138" # Amazon Linux (Mumbai)
   instance_type = "t2.micro"
   subnet_id     = aws_subnet.private_subnet.id
 
@@ -161,9 +172,10 @@ resource "aws_lb" "app_alb" {
   security_groups = [aws_security_group.alb_sg.id]
 
   subnets = [
-    aws_subnet.public_subnet.id
-  ]
-
+    aws_subnet.public_subnet.id,
+    aws_subnet.private_subnet.id,
+    aws_subnet.public_subnet_2.id
+]
   tags = {
     Name = "app-alb"
   }
@@ -200,7 +212,7 @@ resource "aws_lb_listener" "http_listener" {
 #Launch Template
 resource "aws_launch_template" "app_lt" {
   name_prefix   = "app-template"
-  image_id      = "ami-0f5ee92e2d63afc18"
+  image_id      = "ami-0f559c3642608c138"
   instance_type = "t2.micro"
 
   vpc_security_group_ids = [aws_security_group.demo_vpc_sg.id]
