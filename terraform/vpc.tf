@@ -65,6 +65,11 @@ resource "aws_route_table_association" "public_rt_assc" {
     route_table_id = aws_route_table.public_rt.id
 }
 
+resource "aws_route_table_association" "public_rt_assc_2" {
+    subnet_id      = aws_subnet.public_subnet_2.id
+    route_table_id = aws_route_table.public_rt.id
+}
+
 resource "aws_eip" "nat_eip" {
   domain = "vpc"
 }
@@ -127,18 +132,6 @@ resource "aws_security_group" "demo_vpc_sg" {
         }
 }
 
-resource "aws_instance" "app_server" {
-  ami           = "ami-0f559c3642608c138" # Amazon Linux (Mumbai)
-  instance_type = "t2.micro"
-  subnet_id     = aws_subnet.private_subnet.id
-
-  vpc_security_group_ids = [aws_security_group.demo_vpc_sg.id]
-
-  tags = {
-    Name = "private-ec2"
-  }
-}
-
 #ALB
 resource "aws_security_group" "alb_sg" {
   name        = "alb-security-group"
@@ -173,7 +166,6 @@ resource "aws_lb" "app_alb" {
 
   subnets = [
     aws_subnet.public_subnet.id,
-    aws_subnet.private_subnet.id,
     aws_subnet.public_subnet_2.id
 ]
   tags = {
